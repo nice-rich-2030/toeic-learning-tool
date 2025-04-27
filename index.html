@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>700点→800点TOEICリスニング進捗実感支援ツール</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="title-container">
+                    <h1>700点→800点TOEICリスニング進捗実感支援ツール</h1>
+                    <div>
+                        <button id="evalResetBtn" class="btn-reset">評価データリセット</button>
+                        <button id="clearStorageBtn" class="btn-danger">全データ消去</button>
+                    </div>
+                </div>
+                <div class="controls">
+                    <div class="control-group">
+                        <label>再生速度</label>
+                        <div class="radio-group" id="playbackSpeed">
+                            <label class="radio-label">
+                                <input type="radio" name="speed" value="1.2"> 1.2倍（速い）
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="speed" value="1.0" checked> 1.0倍（標準）
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="speed" value="0.7"> 0.7倍
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="speed" value="0.5"> 0.5倍（遅い）
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="unitSizeInput">評価単位数 (M)：5～20</label>
+                        <input type="number" id="unitSizeInput" min="5" max="20" value="10">
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressText">評価済み: 0/0 (0%)</span>
+                        <span id="totalScore">総合得点: 0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content" id="mainContent">
+            <!-- セクションは動的に生成されます -->
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

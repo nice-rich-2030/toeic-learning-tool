@@ -1,0 +1,434 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --light-color: #f5f5f5;
+    --dark-color: #333;
+    --border-color: #ddd;
+    --text-color: #333;
+    --background-color: #fff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.control-group label {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.radio-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.progress-container {
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--success-color);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.section {
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.section-header {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.score {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.audio-files {
+    padding: 0.5rem;
+}
+
+.audio-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+}
+
+.audio-item:last-child {
+    border-bottom: none;
+}
+
+.audio-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+button {
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-play {
+    background-color: var(--success-color);
+}
+
+.btn-play:hover {
+    background-color: #27ae60;
+}
+
+.btn-pause {
+    background-color: var(--warning-color);
+}
+
+.btn-pause:hover {
+    background-color: #e67e22;
+}
+
+.btn-stop {
+    background-color: var(--danger-color);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-text {
+    background-color: var(--primary-color);
+}
+
+.btn-text:hover {
+    background-color: var(--secondary-color);
+}
+
+.evaluation {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.evaluation-title {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.evaluation-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.evaluation-option {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-left: auto;
+}
+
+.file-name {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.evaluation-date {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.text-content {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--light-color);
+    border-radius: 4px;
+    display: none;
+}
+
+.btn-help, .btn-reset {
+    margin-left: 0.5rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 1.5rem;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.modal-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.close-modal {
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.shortcut-key {
+    font-weight: bold;
+    background-color: var(--light-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* フォーカス表示のスタイル */
+:focus {
+    outline: none;
+}
+
+.main-content:focus {
+    outline: none;
+    /* フォーカス時の視覚的な変化を最小限に */
+    box-shadow: inset 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+button:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.focused {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+input:focus, textarea:focus {
+    outline: 2px solid var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.audio-item.active {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left: 3px solid var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .audio-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .file-info {
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+}
+
+/* 既存のCSSに追加 */
+
+/* フォーカス表示のスタイルを強化 */
+.audio-item {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.audio-item:focus {
+    outline: none;
+    background-color: rgba(52, 152, 219, 0.1);
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.audio-item.focused {
+    background-color: rgba(52, 152, 219, 0.15);
+    border-left: 3px solid var(--primary-color);
+}
+
+/* キーボード操作を視覚的に示す */
+.keyboard-focus-indicator {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.audio-item:focus .keyboard-focus-indicator,
+.audio-item.focused .keyboard-focus-indicator {
+    opacity: 1;
+}
+
+/* アクセシビリティを向上させるためのスタイル */
+.audio-item:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* 現在再生中のアイテムをより明確に */
+.audio-item.active {
+    background-color: rgba(52, 152, 219, 0.2);
+    border-left: 4px solid var(--primary-color);
+}
