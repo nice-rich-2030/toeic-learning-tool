@@ -2,7 +2,9 @@
 let audioFiles = []; // 音声ファイルとテキストのデータ
 let currentAudio = null; // 現在再生中の音声
 let currentAudioId = null; // 現在再生中の音声ID
+let lastAudioId = null; // 最後に再生したファイルのID
 let evaluationData = {}; // 評価データを保持するオブジェクト
+let playCountData = {}; // 再生回数データを保持するオブジェクト
 let unitSize = 10; // 評価単位数M（デフォルト10）
 let playbackRate = 1.0; // 再生速度（デフォルト1.0）
 let activeAudioItem = null; // 現在アクティブな音声アイテム要素
@@ -23,6 +25,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.target.value = unitSize; // 無効な値を元に戻す
         }
     });
+    
+    // 各音声アイテムの再生回数を表示に反映する関数を追加
+    function updateAllPlayCounts() {
+        Object.keys(playCountData).forEach(fileId => {
+            updatePlayCount(fileId);
+        });
+    }
 
     // 再生速度のイベントリスナーを設定
     document.querySelectorAll('input[name="speed"]').forEach(radio => {
@@ -37,24 +46,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 評価データリセットボタンのイベントリスナー
     document.getElementById('evalResetBtn').addEventListener('click', () => {
-        if (confirm('評価データのみをリセットしますか？この操作は元に戻せません。設定や音声ファイルのデータは保持されます。')) {
+        if (confirm('理解度評価値をリセットします。よろしいですか？')) {
             resetData();
         }
     });
     
     // 全データ消去ボタンのイベントリスナー
     document.getElementById('clearStorageBtn').addEventListener('click', () => {
-        if (confirm('ローカルストレージのすべてのデータを消去しますか？評価データ、設定、音声ファイルデータなどすべて削除されます。この操作は元に戻せません。')) {
+        if (confirm('理解度評価のデータのほか、設定、音声ファイル管理データなどをリセットします。よろしいですか？')) {
             clearLocalStorage();
         }
     });
 
     // ウィンドウを閉じる前にデータが保存されていることを通知
-    window.addEventListener('beforeunload', (e) => {
-        const message = 'ページを離れます。データは自動的に保存されています。';
-        e.returnValue = message;
-        return message;
-    });
+    //window.addEventListener('beforeunload', (e) => {
+    //    const message = 'ページを離れます。データは自動的に保存されています。';
+    //    e.returnValue = message;
+    //    return message;
+    //});
 
     // メインコンテンツのスクロールイベント
     document.getElementById('mainContent').addEventListener('scroll', () => {
@@ -83,6 +92,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // スクロール位置を復元
     restoreScrollPosition();
+    
+    // すべての再生回数表示を更新
+    updateAllPlayCounts();
 });
 
 // モックデータの読み込み（デモ用）
@@ -101,7 +113,7 @@ function loadMockData() {
 async function loadDataFromCSV() {
     try {
         // データファイルをフェッチする
-        const response = await fetch('/data/transcripts.csv');
+        const response = await fetch('/toeic-learning-tool/E200/transcripts.csv');
         
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -220,10 +232,24 @@ function createAudioItem(file) {
     textBtn.textContent = '英文';
     textBtn.addEventListener('click', () => toggleText(file.id));
     
+    // 習練ボタンを追加
+    const practiceBtn = document.createElement('button');
+    practiceBtn.className = 'btn-practice';
+    practiceBtn.textContent = '習練';
+    practiceBtn.addEventListener('click', () => playAudioForPractice(file));
+    
+    // 再生回数表示の追加
+    const playCountDisplay = document.createElement('div');
+    playCountDisplay.className = 'play-count';
+    playCountDisplay.id = `playCount_${file.id}`;
+    playCountDisplay.textContent = `連続回数: ${playCountData[file.id] || 0}`;
+    
     audioControls.appendChild(playBtn);
     audioControls.appendChild(pauseBtn);
     audioControls.appendChild(stopBtn);
     audioControls.appendChild(textBtn);
+    audioControls.appendChild(practiceBtn); // 習練ボタンを追加
+    audioControls.appendChild(playCountDisplay);
     
     // 評価コントロール
     const evaluation = document.createElement('div');
@@ -258,7 +284,10 @@ function createAudioItem(file) {
         });
         
         optionLabel.appendChild(radio);
-        optionLabel.appendChild(document.createTextNode(option.label));
+        // テキストノードの代わりにspanを追加
+        const labelSpan = document.createElement('span');
+        labelSpan.textContent = option.label;
+        optionLabel.appendChild(labelSpan);
         evalOptions.appendChild(optionLabel);
     });
     
@@ -298,10 +327,30 @@ function createAudioItem(file) {
 
 // 音声を再生
 function playAudio(file) {
-    // 現在再生中の音声があれば停止
-    if (currentAudio && currentAudioId !== file.id) {
+    // 同じファイルを再生する場合は再生回数をカウントアップ
+    // 違うファイルを再生する場合は再生回数をリセット
+    if (lastAudioId === file.id) {
+        // 同じファイルを再生する場合（前回と同じファイルを再生）
+        playCountData[file.id] = (playCountData[file.id] || 0) + 1;
         stopAudio();
+    } else {
+        // 前のファイルの再生があれば停止
+        if (currentAudio && currentAudioId !== file.id) {
+            stopAudio();
+        }
+        
+        // 新しいファイルの場合は再生回数を1にセット
+        playCountData[file.id] = 1;
     }
+    
+    // 最後に再生したファイルのIDを更新
+    lastAudioId = file.id;
+    
+    // 再生回数を表示に反映
+    updatePlayCount(file.id);
+    
+    // 再生回数に応じて評価を自動更新
+    updateEvaluationBasedOnPlayCount(file.id);
     
     // 音声要素が存在しない場合は作成
     if (!currentAudio || currentAudioId !== file.id) {
@@ -327,6 +376,7 @@ function playAudio(file) {
             activeAudioItem = null;
             currentAudio = null;
             currentAudioId = null;
+            // lastAudioIdはそのまま保持（連続再生の判定のため）
         });
     }
     
@@ -337,6 +387,16 @@ function playAudio(file) {
     activeAudioItem = document.querySelector(`.audio-item[data-id="${file.id}"]`);
     if (activeAudioItem) {
         activeAudioItem.classList.add('active');
+        
+        // 再生回数を表示する要素にフォーカスを当てる
+        const playCountElement = activeAudioItem.querySelector('.play-count');
+        if (playCountElement) {
+            playCountElement.classList.add('highlight');
+            // 1秒後にハイライトを消す
+            setTimeout(() => {
+                playCountElement.classList.remove('highlight');
+            }, 1000);
+        }
     }
     
     // 音声を再生
@@ -344,6 +404,125 @@ function playAudio(file) {
         console.error('音声の再生に失敗しました:', error);
         alert('音声ファイルの再生に失敗しました。ファイルが存在するか確認してください。');
     });
+    
+    // データを保存
+    saveDataToLocalStorage();
+}
+
+// 習練モードで音声を再生（再生回数をカウントアップしない）
+function playAudioForPractice(file) {
+    stopAudio();
+    // 再生回数はカウントアップしない（ここが通常再生と異なる）
+    
+    // 音声要素が存在しない場合は作成
+    if (!currentAudio || currentAudioId !== file.id) {
+        currentAudio = new Audio();
+        currentAudioId = file.id;
+        
+        try {
+            currentAudio.src = file.filePath || `/audio/${file.fileName}`;
+        } catch (error) {
+            console.warn('デモモード: 音声ファイルは実際には再生されません');
+            currentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        }
+        
+        currentAudio.playbackRate = playbackRate;
+        
+        // 再生終了時のイベント
+        currentAudio.addEventListener('ended', () => {
+            if (activeAudioItem) {
+                activeAudioItem.classList.remove('active');
+            }
+            activeAudioItem = null;
+            currentAudio = null;
+            currentAudioId = null;
+        });
+    }
+    
+    // アクティブな音声アイテムを設定
+    if (activeAudioItem) {
+        activeAudioItem.classList.remove('active');
+    }
+    activeAudioItem = document.querySelector(`.audio-item[data-id="${file.id}"]`);
+    if (activeAudioItem) {
+        activeAudioItem.classList.add('active');
+        
+        // 習練モードを示すために別のスタイルを適用することもできます
+        activeAudioItem.classList.add('practice-mode');
+        
+        // 1秒後に習練モードのスタイルを消す
+        setTimeout(() => {
+            activeAudioItem.classList.remove('practice-mode');
+        }, 1000);
+    }
+    
+    // 音声を再生
+    currentAudio.play().catch(error => {
+        console.error('音声の再生に失敗しました:', error);
+        alert('音声ファイルの再生に失敗しました。ファイルが存在するか確認してください。');
+    });
+    
+    // ここでデータを保存しない（再生回数が変わっていないため）
+}
+
+// 再生回数表示を更新
+function updatePlayCount(fileId) {
+    const playCountElement = document.getElementById(`playCount_${fileId}`);
+    if (playCountElement) {
+        playCountElement.textContent = `連続回数: ${playCountData[fileId] || 0}`;
+        
+        // 再生回数に応じて色を変える
+        const count = playCountData[fileId] || 0;
+        playCountElement.className = 'play-count';
+        
+        if (count >= 8) {
+            playCountElement.classList.add('count-very-high');
+        } else if (count >= 6) {
+            playCountElement.classList.add('count-high');
+        } else if (count >= 4) {
+            playCountElement.classList.add('count-medium');
+        } else if (count >= 2) {
+            playCountElement.classList.add('count-low');
+        }
+    }
+}
+
+// 再生回数に応じて評価を自動更新
+function updateEvaluationBasedOnPlayCount(fileId) {
+    const count = playCountData[fileId] || 0;
+    let rating = null;
+    
+    // 再生回数に基づいて評価を決定
+    if (count === 0) {
+        // 未評価
+        rating = null;
+    } else if (count === 1) {
+        // 1回で理解
+        rating = 1;
+    } else if (count >= 2 && count <= 3) {
+        // 3回で理解
+        rating = 2;
+    } else if (count >= 4 && count <= 5) {
+        // 5回で理解
+        rating = 3;
+    } else if (count >= 6 && count <= 7) {
+        // 7回で理解
+        rating = 4;
+    } else {
+        // 理解できない
+        rating = 5;
+    }
+    
+    // 評価を更新
+    if (rating !== null) {
+        // ラジオボタンを選択
+        const radioBtn = document.querySelector(`.audio-item[data-id="${fileId}"] input[value="${rating}"]`);
+        if (radioBtn) {
+            radioBtn.checked = true;
+            // 評価データを保存
+            saveEvaluation(fileId, rating);
+        }
+    }
 }
 
 // 音声を一時停止
@@ -358,6 +537,10 @@ function stopAudio() {
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
+        
+        // 現在再生中だったファイルのIDを記録
+        const stoppedAudioId = currentAudioId;
+        
         currentAudio = null;
         currentAudioId = null;
         
@@ -365,6 +548,11 @@ function stopAudio() {
             activeAudioItem.classList.remove('active');
         }
         activeAudioItem = null;
+        
+        // 停止したファイルの再生回数表示を更新
+        if (stoppedAudioId) {
+            updatePlayCount(stoppedAudioId);
+        }
     }
 }
 
@@ -465,6 +653,8 @@ function loadDataFromLocalStorage() {
             const parsedData = JSON.parse(savedData);
             
             evaluationData = parsedData.evaluationData || {};
+            playCountData = parsedData.playCountData || {};
+            lastAudioId = parsedData.lastAudioId || null;
             unitSize = parsedData.unitSize || 10;
             playbackRate = parsedData.playbackRate || 1.0;
             
@@ -486,6 +676,8 @@ function loadDataFromLocalStorage() {
 function saveDataToLocalStorage() {
     const dataToSave = {
         evaluationData: evaluationData,
+        playCountData: playCountData,
+        lastAudioId: lastAudioId,
         unitSize: unitSize,
         playbackRate: playbackRate,
         scrollPosition: document.getElementById('mainContent').scrollTop,
@@ -513,6 +705,8 @@ function restoreScrollPosition() {
 // データをリセット
 function resetData() {
     evaluationData = {};
+    playCountData = {};
+    lastAudioId = null;
     saveDataToLocalStorage();
     updateUI();
 }

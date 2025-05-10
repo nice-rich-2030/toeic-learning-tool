@@ -432,3 +432,70 @@ input:focus, textarea:focus {
     background-color: rgba(52, 152, 219, 0.2);
     border-left: 4px solid var(--primary-color);
 }
+/* 再生回数表示のスタイル */
+.play-count {
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    margin-left: 0.5rem;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.play-count.highlight {
+    background-color: #fffacd;
+    transform: scale(1.1);
+}
+
+.count-low {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.count-medium {
+    background-color: #fff9c4;
+    color: #f57f17;
+}
+
+.count-high {
+    background-color: #ffccbc;
+    color: #d84315;
+}
+
+.count-very-high {
+    background-color: #ffcdd2;
+    color: #b71c1c;
+}
+
+/* 説明テキストのスタイル */
+.instructions {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* 更新された評価オプションのスタイル */
+.evaluation-option input:checked + span {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* 評価オプションのラベルにスパンを追加 */
+.evaluation-option span {
+    margin-left: 0.25rem;
+}
+
+/* styles.cssに追加するスタイル */
+.btn-practice {
+    background-color: #9b59b6; /* 紫色で「習練」ボタンを区別 */
+}
+
+.btn-practice:hover {
+    background-color: #8e44ad;
+}
+
+.audio-item.practice-mode {
+    background-color: rgba(155, 89, 182, 0.1); /* 習練モード時の背景色 */
+    border-left: 3px solid #9b59b6;
+}
