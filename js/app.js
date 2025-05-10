@@ -665,14 +665,31 @@ function toggleText(fileId) {
         const textContent = audioItem.querySelector('.text-content');
         if (textContent) {
             const isShowing = textContent.style.display === 'none';
-            textContent.style.display = isShowing ? 'block' : 'none';
             
             // 英文を表示した場合、再生回数を8に設定(「理解できない」評価)
             if (isShowing) {
                 playCountData[fileId] = 8;
                 updatePlayCount(fileId);
-                updateEvaluationBasedOnPlayCount(fileId);
+                
+                // 評価の更新
+                const rating = 5; // 「理解できない」の評価値
+                evaluationData[fileId] = {
+                    rating: rating,
+                    date: new Date().toISOString()
+                };
+                
+                // ラジオボタンを選択（UIの部分更新のみ）
+                const radioBtn = document.querySelector(`.audio-item[data-id="${fileId}"] input[value="${rating}"]`);
+                if (radioBtn) {
+                    radioBtn.checked = true;
+                }
+                
+                // データを保存（UI更新なし）
+                saveDataToLocalStorage();
             }
+            
+            // 最後に表示状態を変更
+            textContent.style.display = isShowing ? 'block' : 'none';
         }
     }
 }
