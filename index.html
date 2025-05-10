@@ -34,8 +34,6 @@
 <meta name="msapplication-square310x310logo" content="/toeic-learning-tool/assets/favicon/mstile-headphone-310x310.png">
 <meta name="msapplication-TileColor" content="#ffffff">
 <meta name="theme-color" content="#ffffff">
-
-
 </head>
 <body>
     <div class="container">
@@ -43,20 +41,49 @@
             <div class="header-content">
                 <div class="title-container">
                     <h1>TOEIC700点→800点向け、リスニング実能力の実感型学習ツール</h1>
+                    
+                    <!-- PC表示時のヘッダーボタン -->
                     <div class="header-buttons">
                         <button id="evalResetBtn" class="btn-reset">理解度評価値リセット</button>
                         <button id="clearStorageBtn" class="btn-danger">全データリセット</button>
                         <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="テーマ切替">
                             <span id="themeIcon">🌙</span> <span id="themeText">ダークモード</span>
                         </button>
-                        <a href="https://github.com/nice-rich-2030/toeic-learning-tool/blob/main/README.md" 
-                        target="_blank" 
-                        class="manual-link" 
-                        title="使い方マニュアルを開く">
+                        <a href="https://nice-rich-2030.github.io/toeic-learning-tool/" 
+                           target="_blank" 
+                           class="manual-link" 
+                           title="使い方マニュアルを開く">
                             📘 マニュアル
                         </a>
                     </div>
+                    
+                    <!-- ハンバーガーメニューボタン（モバイル用） -->
+                    <button id="menuBtn" class="menu-button" aria-label="メニューを開く">
+                        <span class="menu-icon"></span>
+                    </button>
                 </div>
+                
+                <!-- メニュードロップダウン（モバイル用） -->
+                <div id="menuDropdown" class="menu-dropdown">
+                    <div class="menu-items">
+                        <a href="https://nice-rich-2030.github.io/toeic-learning-tool/" 
+                           target="_blank" 
+                           class="menu-item" 
+                           title="使い方マニュアルを開く">
+                            📘 マニュアル
+                        </a>
+                        <button id="mobileThemeBtn" class="menu-item">
+                            <span id="mobileThemeIcon">🌙</span> <span id="mobileThemeText">ダークモード</span>
+                        </button>
+                        <button id="mobileEvalResetBtn" class="menu-item">
+                            🔄 理解度評価値リセット
+                        </button>
+                        <button id="mobileClearStorageBtn" class="menu-item danger">
+                            🗑️ 全データリセット
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="controls">
                     <div class="control-group">
                         <label>再生速度</label>

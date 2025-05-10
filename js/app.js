@@ -1,10 +1,3 @@
-/**
- * TOEIC リスニング実能力の実感型学習ツール
- * Copyright (c) 2025 Daily Growth
- * https://yourworklifedesign.blogspot.com/
- * All rights reserved.
- */
-
 // グローバル変数
 let audioFiles = []; // 音声ファイルとテキストのデータ
 let currentAudio = null; // 現在再生中の音声
@@ -27,6 +20,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // テーマ切替ボタンのイベントリスナー
     document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+    
+    // モバイル版のテーマ切替ボタンも連携させる
+    document.getElementById('mobileThemeBtn').addEventListener('click', toggleTheme);
 
     // 評価単位サイズのイベントリスナーを設定
     document.getElementById('unitSizeInput').addEventListener('change', (e) => {
@@ -65,19 +61,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
     
+    // モバイル版の評価データリセットボタンも連携
+    document.getElementById('mobileEvalResetBtn').addEventListener('click', () => {
+        if (confirm('理解度評価値をリセットします。よろしいですか？')) {
+            resetData();
+            closeMenu(); // メニューを閉じる
+        }
+    });
+    
     // 全データ消去ボタンのイベントリスナー
     document.getElementById('clearStorageBtn').addEventListener('click', () => {
         if (confirm('理解度評価のデータのほか、設定、音声ファイル管理データなどをリセットします。よろしいですか？')) {
             clearLocalStorage();
         }
     });
+    
+    // モバイル版の全データ消去ボタンも連携
+    document.getElementById('mobileClearStorageBtn').addEventListener('click', () => {
+        if (confirm('理解度評価のデータのほか、設定、音声ファイル管理データなどをリセットします。よろしいですか？')) {
+            clearLocalStorage();
+        }
+    });
 
-    // ウィンドウを閉じる前にデータが保存されていることを通知
-    //window.addEventListener('beforeunload', (e) => {
-    //    const message = 'ページを離れます。データは自動的に保存されています。';
-    //    e.returnValue = message;
-    //    return message;
-    //});
+    // ハンバーガーメニューのイベントリスナー
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+    
+    menuBtn.addEventListener('click', function(event) {
+        event.stopPropagation(); // イベントの伝播を止める
+        this.classList.toggle('open');
+        if (this.classList.contains('open')) {
+            menuDropdown.style.display = 'block';
+        } else {
+            menuDropdown.style.display = 'none';
+        }
+    });
+    
+    // 画面のどこかをクリックしたらメニューを閉じる
+    document.addEventListener('click', function(event) {
+        if (!menuBtn.contains(event.target) && !menuDropdown.contains(event.target)) {
+            closeMenu();
+        }
+    });
 
     // メインコンテンツのスクロールイベント
     document.getElementById('mainContent').addEventListener('scroll', () => {
@@ -111,23 +136,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateAllPlayCounts();
 });
 
+// メニューを閉じる
+function closeMenu() {
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+    
+    menuBtn.classList.remove('open');
+    menuDropdown.style.display = 'none';
+}
+
 // テーマ切替機能
 function toggleTheme() {
     darkMode = !darkMode;
     applyTheme();
     saveDataToLocalStorage();
+    // モバイルメニューを閉じる
+    closeMenu();
 }
 
 // テーマを適用
 function applyTheme() {
     if (darkMode) {
         document.body.classList.add('dark-mode');
+        // PC版テーマ表示を更新
         document.getElementById('themeIcon').textContent = '☀️';
         document.getElementById('themeText').textContent = 'ライトモード';
+        // モバイル版テーマ表示も更新
+        document.getElementById('mobileThemeIcon').textContent = '☀️';
+        document.getElementById('mobileThemeText').textContent = 'ライトモード';
     } else {
         document.body.classList.remove('dark-mode');
+        // PC版テーマ表示を更新
         document.getElementById('themeIcon').textContent = '🌙';
         document.getElementById('themeText').textContent = 'ダークモード';
+        // モバイル版テーマ表示も更新
+        document.getElementById('mobileThemeIcon').textContent = '🌙';
+        document.getElementById('mobileThemeText').textContent = 'ダークモード';
     }
 }
 
@@ -836,7 +880,9 @@ function formatDate(date) {
 // ウィンドウのクリックイベントでモーダルを閉じる
 window.addEventListener('click', (e) => {
     const helpModal = document.getElementById('helpModal');
-    if (e.target === helpModal) {
+    if (helpModal && e.target === helpModal) {
         helpModal.style.display = 'none';
     }
-});                
+});
+
+   
