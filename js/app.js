@@ -1,3 +1,10 @@
+/**
+ * TOEIC リスニング実能力の実感型学習ツール
+ * Copyright (c) 2025 Daily Growth
+ * https://yourworklifedesign.blogspot.com/
+ * All rights reserved.
+ */
+
 // グローバル変数
 let audioFiles = []; // 音声ファイルとテキストのデータ
 let currentAudio = null; // 現在再生中の音声

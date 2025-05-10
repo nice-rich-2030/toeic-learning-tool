@@ -656,3 +656,23 @@ input:focus, textarea:focus {
     background-color: var(--practice-bg); /* 習練モード時の背景色 */
     border-left: 3px solid var(--practice-color);
 }
+/* マニュアルリンクのスタイル */
+.manual-link {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    background-color: #5cb85c;
+    color: var(--header-text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.manual-link:hover {
+    background-color: #4cae4c;
+    text-decoration: none;
+    color: var(--header-text);
+}
