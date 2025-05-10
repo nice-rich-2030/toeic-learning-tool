@@ -9,6 +9,37 @@
     --border-color: #ddd;
     --text-color: #333;
     --background-color: #fff;
+    --header-background: #3498db; /* ヘッダー背景色を追加 */
+    --header-text: white;         /* ヘッダーテキスト色を追加 */
+    --score-background: rgba(255, 255, 255, 0.2);
+    --star-color: gold;
+    --star-empty-color: #ddd;
+    --audio-item-active: rgba(52, 152, 219, 0.1);
+    --audio-item-hover: rgba(52, 152, 219, 0.05);
+    --audio-item-border: 3px solid var(--primary-color);
+    --practice-color: #9b59b6;
+    --practice-hover: #8e44ad;
+    --practice-bg: rgba(155, 89, 182, 0.1);
+}
+
+/* ダークモード用の変数 */
+.dark-mode {
+    --primary-color: #2c82c9;
+    --secondary-color: #1a5f9e;
+    --success-color: #27ae60;
+    --danger-color: #c0392b;
+    --warning-color: #e67e22;
+    --light-color: #444;
+    --dark-color: #f5f5f5;
+    --border-color: #555;
+    --text-color: #f5f5f5;
+    --background-color: #222;
+    --header-background: #1a2733; /* ダークモード時のヘッダー背景色 */
+    --header-text: #e0e0e0;       /* ダークモード時のヘッダーテキスト色 */
+    --score-background: rgba(0, 0, 0, 0.3);
+    --audio-item-active: rgba(52, 152, 219, 0.2);
+    --audio-item-hover: rgba(52, 152, 219, 0.1);
+    --practice-bg: rgba(155, 89, 182, 0.2);
 }
 
 * {
@@ -22,6 +53,7 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--background-color);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
@@ -31,13 +63,14 @@ body {
 }
 
 header {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--header-background);
+    color: var(--header-text);
     padding: 1rem;
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .header-content {
@@ -50,6 +83,14 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 h1 {
@@ -95,9 +136,14 @@ h1 {
 
 .progress-bar {
     height: 8px;
-    background-color: #e0e0e0;
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+.dark-mode .progress-bar {
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .progress-fill {
@@ -125,15 +171,19 @@ h1 {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
+    transition: border-color 0.3s;
 }
 
 .section-header {
     background-color: var(--secondary-color);
-    color: white;
+    color: var(--header-text);
     padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .section-title {
@@ -141,11 +191,33 @@ h1 {
     font-weight: bold;
 }
 
+.section-score-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
 .score {
     font-weight: bold;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--score-background);
+    transition: background-color 0.3s;
+}
+
+.star-rating {
+    color: var(--star-color);
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.eval-date-display {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--score-background);
+    border-radius: 4px;
+    white-space: nowrap;
 }
 
 .audio-files {
@@ -159,15 +231,21 @@ h1 {
     padding: 0.75rem;
     border-bottom: 1px solid var(--border-color);
     align-items: center;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .audio-item:last-child {
     border-bottom: none;
 }
 
+.audio-item:hover {
+    background-color: var(--audio-item-hover);
+}
+
 .audio-controls {
     display: flex;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 button {
@@ -212,6 +290,7 @@ button:disabled {
 
 .btn-danger {
     background-color: var(--danger-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-danger:hover {
@@ -224,6 +303,23 @@ button:disabled {
 
 .btn-text:hover {
     background-color: var(--secondary-color);
+}
+
+.btn-reset {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-toggle-btn {
+    background-color: transparent;
+    border: 1px solid var(--header-text);
+    color: var(--header-text);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.theme-toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .evaluation {
@@ -251,6 +347,15 @@ button:disabled {
     cursor: pointer;
 }
 
+.evaluation-option input:checked + span {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.evaluation-option span {
+    margin-left: 0.25rem;
+}
+
 .file-info {
     display: flex;
     flex-direction: column;
@@ -268,6 +373,10 @@ button:disabled {
     color: #666;
 }
 
+.dark-mode .evaluation-date {
+    color: #aaa;
+}
+
 .text-content {
     width: 100%;
     margin-top: 0.5rem;
@@ -275,6 +384,7 @@ button:disabled {
     background-color: var(--light-color);
     border-radius: 4px;
     display: none;
+    transition: background-color 0.3s;
 }
 
 .btn-help, .btn-reset {
@@ -301,6 +411,11 @@ button:disabled {
     max-width: 500px;
     max-height: 80%;
     overflow-y: auto;
+}
+
+.dark-mode .modal-content {
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .modal-header {
@@ -362,8 +477,8 @@ input:focus, textarea:focus {
 }
 
 .audio-item.active {
-    background-color: rgba(52, 152, 219, 0.1);
-    border-left: 3px solid var(--primary-color);
+    background-color: var(--audio-item-active);
+    border-left: var(--audio-item-border);
 }
 
 @media (max-width: 768px) {
@@ -381,6 +496,16 @@ input:focus, textarea:focus {
         margin-left: 0;
         margin-top: 0.5rem;
     }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .section-score-container {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 /* 既存のCSSに追加 */
@@ -393,13 +518,13 @@ input:focus, textarea:focus {
 
 .audio-item:focus {
     outline: none;
-    background-color: rgba(52, 152, 219, 0.1);
+    background-color: var(--audio-item-active);
     box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 .audio-item.focused {
     background-color: rgba(52, 152, 219, 0.15);
-    border-left: 3px solid var(--primary-color);
+    border-left: var(--audio-item-border);
 }
 
 /* キーボード操作を視覚的に示す */
@@ -429,8 +554,8 @@ input:focus, textarea:focus {
 
 /* 現在再生中のアイテムをより明確に */
 .audio-item.active {
-    background-color: rgba(52, 152, 219, 0.2);
-    border-left: 4px solid var(--primary-color);
+    background-color: var(--audio-item-active);
+    border-left: var(--audio-item-border);
 }
 /* 再生回数表示のスタイル */
 .play-count {
@@ -443,9 +568,17 @@ input:focus, textarea:focus {
     transition: background-color 0.3s, transform 0.3s;
 }
 
+.dark-mode .play-count {
+    background-color: var(--light-color);
+}
+
 .play-count.highlight {
     background-color: #fffacd;
     transform: scale(1.1);
+}
+
+.dark-mode .play-count.highlight {
+    background-color: #665e00;
 }
 
 .count-low {
@@ -453,9 +586,19 @@ input:focus, textarea:focus {
     color: #1976d2;
 }
 
+.dark-mode .count-low {
+    background-color: #0d47a1;
+    color: #e3f2fd;
+}
+
 .count-medium {
     background-color: #fff9c4;
     color: #f57f17;
+}
+
+.dark-mode .count-medium {
+    background-color: #665e00;
+    color: #fff9c4;
 }
 
 .count-high {
@@ -463,9 +606,19 @@ input:focus, textarea:focus {
     color: #d84315;
 }
 
+.dark-mode .count-high {
+    background-color: #641e00;
+    color: #ffccbc;
+}
+
 .count-very-high {
     background-color: #ffcdd2;
     color: #b71c1c;
+}
+
+.dark-mode .count-very-high {
+    background-color: #5d0000;
+    color: #ffcdd2;
 }
 
 /* 説明テキストのスタイル */
@@ -473,6 +626,10 @@ input:focus, textarea:focus {
     font-size: 0.8rem;
     color: #666;
     margin-top: 0.25rem;
+}
+
+.dark-mode .instructions {
+    color: #aaa;
 }
 
 /* 更新された評価オプションのスタイル */
@@ -488,14 +645,14 @@ input:focus, textarea:focus {
 
 /* styles.cssに追加するスタイル */
 .btn-practice {
-    background-color: #9b59b6; /* 紫色で「習練」ボタンを区別 */
+    background-color: var(--practice-color); /* 紫色で「習練」ボタンを区別 */
 }
 
 .btn-practice:hover {
-    background-color: #8e44ad;
+    background-color: var(--practice-hover);
 }
 
 .audio-item.practice-mode {
-    background-color: rgba(155, 89, 182, 0.1); /* 習練モード時の背景色 */
-    border-left: 3px solid #9b59b6;
+    background-color: var(--practice-bg); /* 習練モード時の背景色 */
+    border-left: 3px solid var(--practice-color);
 }

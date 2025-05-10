@@ -8,11 +8,18 @@ let playCountData = {}; // 再生回数データを保持するオブジェク�
 let unitSize = 10; // 評価単位数M（デフォルト10）
 let playbackRate = 1.0; // 再生速度（デフォルト1.0）
 let activeAudioItem = null; // 現在アクティブな音声アイテム要素
+let darkMode = false; // ダークモードフラグ
 
 // DOMが読み込まれたら初期化
 document.addEventListener('DOMContentLoaded', async () => {
     // localStorage からデータを読み込む
     loadDataFromLocalStorage();
+
+    // ダークモード設定を適用
+    applyTheme();
+
+    // テーマ切替ボタンのイベントリスナー
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
 
     // 評価単位サイズのイベントリスナーを設定
     document.getElementById('unitSizeInput').addEventListener('change', (e) => {
@@ -97,6 +104,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateAllPlayCounts();
 });
 
+// テーマ切替機能
+function toggleTheme() {
+    darkMode = !darkMode;
+    applyTheme();
+    saveDataToLocalStorage();
+}
+
+// テーマを適用
+function applyTheme() {
+    if (darkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('themeIcon').textContent = '☀️';
+        document.getElementById('themeText').textContent = 'ライトモード';
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById('themeIcon').textContent = '🌙';
+        document.getElementById('themeText').textContent = 'ダークモード';
+    }
+}
+
 // モックデータの読み込み（デモ用）
 function loadMockData() {
     audioFiles = [];
@@ -177,12 +204,36 @@ function updateUI() {
         sectionTitle.className = 'section-title';
         sectionTitle.textContent = `セクション ${i + 1} (ファイル ${sectionStart + 1}-${sectionEnd})`;
         
+        // スコア関連情報のコンテナ
+        const sectionScoreContainer = document.createElement('div');
+        sectionScoreContainer.className = 'section-score-container';
+        
+        // 評価日時の表示
+        const evalDateDisplay = document.createElement('div');
+        evalDateDisplay.className = 'eval-date-display';
+        if (sectionScore.latestDate) {
+            evalDateDisplay.textContent = formatDateFull(new Date(sectionScore.latestDate));
+        }
+        
+        // スコア表示
         const scoreDisplay = document.createElement('div');
         scoreDisplay.className = 'score';
         scoreDisplay.textContent = sectionScore.label;
         
+        // 星評価の表示
+        const starRating = document.createElement('div');
+        starRating.className = 'star-rating';
+        starRating.textContent = sectionScore.stars;
+        
+        // 日時、スコア、星評価をコンテナに追加
+        if (sectionScore.latestDate) {
+            sectionScoreContainer.appendChild(evalDateDisplay);
+        }
+        sectionScoreContainer.appendChild(scoreDisplay);
+        sectionScoreContainer.appendChild(starRating);
+        
         sectionHeader.appendChild(sectionTitle);
-        sectionHeader.appendChild(scoreDisplay);
+        sectionHeader.appendChild(sectionScoreContainer);
         section.appendChild(sectionHeader);
         
         // 音声ファイルのリスト
@@ -556,13 +607,21 @@ function stopAudio() {
     }
 }
 
-// 英文表示を切り替える
+// 英文表示を切り替える (改修: 英文を表示した場合、連続回数を8に設定)
 function toggleText(fileId) {
     const audioItem = document.querySelector(`.audio-item[data-id="${fileId}"]`);
     if (audioItem) {
         const textContent = audioItem.querySelector('.text-content');
         if (textContent) {
-            textContent.style.display = textContent.style.display === 'none' ? 'block' : 'none';
+            const isShowing = textContent.style.display === 'none';
+            textContent.style.display = isShowing ? 'block' : 'none';
+            
+            // 英文を表示した場合、再生回数を8に設定(「理解できない」評価)
+            if (isShowing) {
+                playCountData[fileId] = 8;
+                updatePlayCount(fileId);
+                updateEvaluationBasedOnPlayCount(fileId);
+            }
         }
     }
 }
@@ -581,15 +640,22 @@ function saveEvaluation(fileId, rating) {
     saveDataToLocalStorage();
 }
 
-// セクションのスコアを計算
+// セクションのスコアを計算 (改修: 星評価と評価日時を返す)
 function calculateSectionScore(sectionFiles) {
     let totalScore = 0;
     let evaluatedCount = 0;
+    let latestDate = null;
     
     sectionFiles.forEach(file => {
         if (evaluationData[file.id]) {
             evaluatedCount++;
             const rating = evaluationData[file.id].rating;
+            const date = evaluationData[file.id].date;
+            
+            // 最新の評価日時を追跡
+            if (!latestDate || new Date(date) > new Date(latestDate)) {
+                latestDate = date;
+            }
             
             switch (rating) {
                 case 1: totalScore += 100 / unitSize; break;
@@ -603,19 +669,27 @@ function calculateSectionScore(sectionFiles) {
     
     // すべてのファイルが評価されているか確認
     if (evaluatedCount === sectionFiles.length) {
+        // 星評価の計算
+        const starCount = Math.min(Math.ceil(totalScore / 20), 5);
+        const stars = '★'.repeat(starCount) + '☆'.repeat(5 - starCount);
+        
         return {
             value: totalScore,
-            label: `スコア: ${totalScore.toFixed(1)}`
+            label: `スコア: ${totalScore.toFixed(1)}`,
+            stars: stars,
+            latestDate: latestDate
         };
     } else {
         return {
             value: 0,
-            label: '未評価'
+            label: '未評価',
+            stars: '',
+            latestDate: null
         };
     }
 }
 
-// 全体の進捗状況を更新
+// 全体の進捗状況を更新 (改修: 総合得点を平均点に変更)
 function updateProgress() {
     const totalFiles = audioFiles.length;
     const evaluatedFiles = Object.keys(evaluationData).length;
@@ -625,7 +699,7 @@ function updateProgress() {
     document.getElementById('progressFill').style.width = `${progressPercent}%`;
     document.getElementById('progressText').textContent = `評価済み: ${evaluatedFiles}/${totalFiles} (${progressPercent.toFixed(1)}%)`;
     
-    // 総合得点を計算
+    // セクションの平均点を計算
     let totalScore = 0;
     let sectionsCompleted = 0;
     const sectionCount = Math.ceil(audioFiles.length / unitSize);
@@ -642,7 +716,20 @@ function updateProgress() {
         }
     }
     
-    document.getElementById('totalScore').textContent = `総合得点: ${totalScore.toFixed(1)}`;
+    // 平均点を計算して表示
+    const averageScore = sectionsCompleted > 0 ? totalScore / sectionsCompleted : 0;
+    document.getElementById('averageScore').textContent = `平均点: ${averageScore.toFixed(1)}`;
+}
+
+// 完全な日付フォーマット（YYYY年M月D日HH時MM分）
+function formatDateFull(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}年${month}月${day}日${hours}時${minutes}分`;
 }
 
 // ローカルストレージからデータを読み込む
@@ -657,6 +744,7 @@ function loadDataFromLocalStorage() {
             lastAudioId = parsedData.lastAudioId || null;
             unitSize = parsedData.unitSize || 10;
             playbackRate = parsedData.playbackRate || 1.0;
+            darkMode = parsedData.darkMode || false;
             
             // audioFilesデータがあれば復元
             if (parsedData.audioFiles && parsedData.audioFiles.length > 0) {
@@ -670,6 +758,11 @@ function loadDataFromLocalStorage() {
             console.error('保存データの解析に失敗しました:', error);
         }
     }
+    
+    // システム設定に基づくダークモード初期値
+    if (savedData === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        darkMode = true;
+    }
 }
 
 // データをローカルストレージに保存
@@ -681,7 +774,8 @@ function saveDataToLocalStorage() {
         unitSize: unitSize,
         playbackRate: playbackRate,
         scrollPosition: document.getElementById('mainContent').scrollTop,
-        audioFiles: audioFiles // 音声ファイルデータも保存
+        audioFiles: audioFiles, // 音声ファイルデータも保存
+        darkMode: darkMode // ダークモード設定を保存
     };
     
     localStorage.setItem('toeicLearningData', JSON.stringify(dataToSave));
@@ -738,4 +832,4 @@ window.addEventListener('click', (e) => {
     if (e.target === helpModal) {
         helpModal.style.display = 'none';
     }
-});
+});                

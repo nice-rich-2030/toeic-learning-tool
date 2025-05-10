@@ -41,9 +41,12 @@
             <div class="header-content">
                 <div class="title-container">
                     <h1>TOEIC700点→800点向け、リスニング実能力の実感型学習ツール</h1>
-                    <div>
+                    <div class="header-buttons">
                         <button id="evalResetBtn" class="btn-reset">理解度評価値リセット</button>
                         <button id="clearStorageBtn" class="btn-danger">全データリセット</button>
+                        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="テーマ切替">
+                            <span id="themeIcon">🌙</span> <span id="themeText">ダークモード</span>
+                        </button>
                     </div>
                 </div>
                 <div class="controls">
@@ -75,7 +78,7 @@
                     </div>
                     <div class="progress-text">
                         <span id="progressText">評価済み: 0/0 (0%)</span>
-                        <span id="totalScore">総合得点: 0</span>
+                        <span id="averageScore">平均点: 0</span>
                     </div>
                 </div>
             </div>
@@ -89,4 +92,3 @@
     <script src="/toeic-learning-tool/js/app.js"></script>
 </body>
 </html>
-
