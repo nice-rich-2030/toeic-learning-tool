@@ -35,7 +35,7 @@
     --text-color: #f5f5f5;
     --background-color: #222;
     --header-background: #1a2733; /* ダークモード時のヘッダー背景色 */
-    --header-text: #e0e0e0;       /* ダークモード時のヘッダーテキスト色 */
+    --header-text: #e0e0e0;       /* ダークモード時のヘ*/
     --score-background: rgba(0, 0, 0, 0.3);
     --audio-item-active: rgba(52, 152, 219, 0.2);
     --audio-item-hover: rgba(52, 152, 219, 0.1);
@@ -481,6 +481,130 @@ input:focus, textarea:focus {
     border-left: var(--audio-item-border);
 }
 
+/* マニュアルリンクのスタイル */
+.manual-link {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    background-color: #5cb85c;
+    color: var(--header-text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.manual-link:hover {
+    background-color: #4cae4c;
+    text-decoration: none;
+    color: var(--header-text);
+}
+
+/* モバイルメニュー関連のスタイル */
+.menu-button {
+    display: none;
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.menu-icon {
+    display: block;
+    width: 24px;
+    height: 3px;
+    background-color: var(--header-text);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: background-color 0.3s;
+}
+
+.menu-icon::before,
+.menu-icon::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 3px;
+    background-color: var(--header-text);
+    transition: transform 0.3s;
+    left: 0; /* 追加: 左端を親要素に合わせる */
+}
+
+.menu-icon::before {
+    top: -7px;
+}
+
+.menu-icon::after {
+    top: 7px;
+}
+
+/* メニューオープン時のアイコン変形 */
+.menu-button.open .menu-icon {
+    background-color: transparent;
+}
+
+.menu-button.open .menu-icon::before {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-button.open .menu-icon::after {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 240px;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 110;
+}
+
+.menu-items {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    color: var(--text-color);
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-item.danger {
+    color: var(--danger-color);
+}
+
 @media (max-width: 768px) {
     .controls {
         flex-direction: column;
@@ -505,6 +629,59 @@ input:focus, textarea:focus {
     .section-score-container {
         width: 100%;
         justify-content: space-between;
+    }
+    
+    /* ヘッダーのサイズ調整 */
+    header {
+        padding: 0.5rem;
+    }
+    
+    h1 {
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
+    }
+    
+    .title-container {
+        position: relative;
+        padding-right: 40px;
+    }
+    
+    /* ハンバーガーメニューを表示 */
+    .menu-button {
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    /* ヘッダーボタン類を非表示にし、メニューに集約 */
+    .header-buttons {
+        display: none;
+    }
+    
+    /* 進捗バーのサイズ調整 */
+    .progress-bar {
+        height: 6px;
+    }
+    
+    .progress-text {
+        font-size: 0.75rem;
+    }
+    
+    /* コントロール部分の調整 */
+    .controls {
+        margin-top: 0.25rem;
+        gap: 0.5rem;
+    }
+    
+    .control-group label {
+        font-size: 0.75rem;
+    }
+    
+    .radio-label {
+        font-size: 0.8rem;
     }
 }
 
@@ -655,205 +832,4 @@ input:focus, textarea:focus {
 .audio-item.practice-mode {
     background-color: var(--practice-bg); /* 習練モード時の背景色 */
     border-left: 3px solid var(--practice-color);
-}
-/* マニュアルリンクのスタイル */
-.manual-link {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    background-color: #5cb85c;
-    color: var(--header-text);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: background-color 0.2s;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.manual-link:hover {
-    background-color: #4cae4c;
-    text-decoration: none;
-    color: var(--header-text);
-}
-
-/* モバイルメニュー関連のスタイル */
-.menu-button {
-    display: none;
-    background: transparent;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    position: relative;
-    width: 40px;
-    height: 40px;
-}
-
-.menu-icon {
-    display: block;
-    width: 24px;
-    height: 3px;
-    background-color: var(--header-text);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: background-color 0.3s;
-}
-
-.menu-icon::before,
-.menu-icon::after {
-    content: '';
-    position: absolute;
-    width: 24px;
-    height: 3px;
-    background-color: var(--header-text);
-    transition: transform 0.3s;
-}
-
-.menu-icon::before {
-    top: -7px;
-}
-
-.menu-icon::after {
-    top: 7px;
-}
-
-/* メニューオープン時のアイコン変形 */
-.menu-button.open .menu-icon {
-    background-color: transparent;
-}
-
-.menu-button.open .menu-icon::before {
-    transform: rotate(45deg) translate(5px, 5px);
-}
-
-.menu-button.open .menu-icon::after {
-    transform: rotate(-45deg) translate(5px, -5px);
-}
-
-.menu-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 240px;
-    background-color: var(--background-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 110;
-}
-
-.menu-items {
-    display: flex;
-    flex-direction: column;
-    padding: 0.5rem;
-}
-
-.menu-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    color: var(--text-color);
-    background-color: transparent;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 0.95rem;
-    text-decoration: none;
-    transition: background-color 0.2s;
-}
-
-.menu-item:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.dark-mode .menu-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-.menu-item.danger {
-    color: var(--danger-color);
-}
-
-/* マニュアルリンクのスタイル */
-.manual-link {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    background-color: #5cb85c;
-    color: var(--header-text);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: background-color 0.2s;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.manual-link:hover {
-    background-color: #4cae4c;
-    text-decoration: none;
-    color: var(--header-text);
-}
-
-/* モバイル対応の調整 */
-@media (max-width: 768px) {
-    /* 既存のモバイル対応は維持する */
-    
-    /* ヘッダーのサイズ調整 */
-    header {
-        padding: 0.5rem;
-    }
-    
-    h1 {
-        font-size: 1.1rem;
-        margin-bottom: 0.25rem;
-        line-height: 1.3;
-    }
-    
-    .title-container {
-        position: relative;
-        padding-right: 40px;
-    }
-    
-    /* ハンバーガーメニューを表示 */
-    .menu-button {
-        display: block;
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    
-    /* ヘッダーボタン類を非表示にし、メニューに集約 */
-    .header-buttons {
-        display: none;
-    }
-    
-    /* 進捗バーのサイズ調整 */
-    .progress-bar {
-        height: 6px;
-    }
-    
-    .progress-text {
-        font-size: 0.75rem;
-    }
-    
-    /* コントロール部分の調整 */
-    .controls {
-        margin-top: 0.25rem;
-        gap: 0.5rem;
-    }
-    
-    .control-group label {
-        font-size: 0.75rem;
-    }
-    
-    .radio-label {
-        font-size: 0.8rem;
-    }
 }
